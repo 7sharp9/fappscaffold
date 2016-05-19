@@ -1,6 +1,5 @@
-<App>
-	<JavaScript File="fablecore.js" ux:Global="fable-core" /> 	
-	<JavaScript File="../JavaScript/Generated/Library1.js" />
+<App>	
+	<JavaScript File="JavaScript/Generated/Library1.js" />
 
 	<ClientPanel>		
 		<StackPanel>
@@ -9,6 +8,7 @@
 			<Text Value="{obsX}" /> 
 			<Text Value="{obsY}" />
 			<Text Value="{obsZ}" />
+			<Text Value="{obsU}" />
 			<Text Value="{plainObservable}" />
 			<Text Value="{untypedObservable}" />
 			<Text Value="{untypedProjection}" />
@@ -20,7 +20,16 @@
 					</StackPanel>
 				</Each>
 			</StackPanel>
+			<StackPanel>
+				<Each Items="{kiss}">
+					<Panel>
+						<Text Value="{}" />
+					</Panel>
+				</Each>
+			</StackPanel>
 			<Text Value="{numNames}" />
+			<Text Value="{untypedProjection}" />
+			<Text Value="{counter}" />
 		</StackPanel>
 		
 	</ClientPanel>

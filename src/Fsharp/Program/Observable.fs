@@ -27,8 +27,8 @@ module Observable =
         abstract member contains : 'T -> bool
         abstract member filter : ('T -> bool) -> IObservable<'T>
         abstract member expand : unit -> IObservable<'T>
-        abstract member addSubscriber: ('T -> unit) -> unit
-        abstract member removeSubscriber: ('T -> unit) -> unit
+        abstract member addSubscriber: (IObservable<'T> -> unit) -> unit
+        abstract member removeSubscriber: (IObservable<'T> -> unit) -> unit
         abstract member length: unit -> int
         abstract member toArray: unit -> 'T array
         abstract member getAt : int -> 'T
@@ -42,7 +42,7 @@ module Observable =
     type IObservable = 
         inherit IObservable<obj>                
 
-    type private ObservableFactory =
+    type ObservableFactory =
         [<Emit("$0($1)")>] abstract Invoke<'T> : element: 'T -> IObservable<'T>
         [<Emit("$0()")>] abstract Invoke<'T> : unit -> IObservable<'T>
         [<Emit("$0($1)")>] abstract InvokeUnsafe<'T> : element: 'T -> IUnsafeObservable<'T>
@@ -52,7 +52,7 @@ module Observable =
 
     // An empty string is also equivalent to "default"
     [<Import("default", "FuseJS/Observable")>]
-    let private observable: ObservableFactory = failwith "JS only"
+    let observable: ObservableFactory = failwith "JS only"
 
     let createWith<'T> (elem : 'T) = observable.Invoke(elem)
     let createTyped<'T> = observable.Invoke<'T>()
