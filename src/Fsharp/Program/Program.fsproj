@@ -56,6 +56,7 @@ build.bat</PostBuildEvent>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Observable.fs" />
+    <Compile Include="fetch.fs" />
     <Compile Include="Apis.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Library1.fs" />
