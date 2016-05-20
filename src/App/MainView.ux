@@ -14,12 +14,12 @@
 			<Text Value="{untypedProjection}" />
 			<StackPanel>
 				<Each Items="{names}">
-					<StackPanel Orientation="Horizontal">
+					<StackPanel Orientation="Horizontal"> 
 						<Text Value="{name}" />
 						<Text Value="{age}" />
 					</StackPanel>
 				</Each>
-			</StackPanel>
+			</StackPanel> 
 			<StackPanel>
 				<Each Items="{kiss}">
 					<Panel>
@@ -30,6 +30,18 @@
 			<Text Value="{numNames}" />
 			<Text Value="{untypedProjection}" />
 			<Text Value="{counter}" />
+			<Grid>
+				<Each Items="{data.colorsArray}">
+					<DockPanel Height="60" Margin="10,0">
+						<Panel DockPanel.Dock="Top" Margin="10" Height="30">
+							<Rectangle Layer="Background" CornerRadius="10" Fill="#fff"/>
+							<Text Value="{colorName}" TextAlignment="Center" Alignment="Center" />
+						</Panel>
+
+						<Rectangle Layer="Background" CornerRadius="10" Fill="{hexValue}"/>
+					</DockPanel>
+				</Each>
+			</Grid>
 		</StackPanel>
 		
 	</ClientPanel>
