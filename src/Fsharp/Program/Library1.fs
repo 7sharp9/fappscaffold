@@ -1,9 +1,37 @@
 ﻿namespace Program
 
+open System
 open Fuse
 open Fable.Core
+open Fable.Import
+
+//then 
+//                <Func<T, U2<TResult, JS.PromiseLike<TResult>>>> *
+//                <Func<obj, U2<TResult, JS.PromiseLike<TResult>>>> -> TResult
+
+//then 
+//                <Func<T, U2<TResult, JS.PromiseLike<TResult>>>> *
+//                <Func<obj, Unit>> onrejected) -> TResult
+
+
+    
+    
+
 
 module Module1 =    
+    
+    let data = Observable.create()
+    promise {
+        let! req = fetch "http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json"
+        let! json = req.json ()
+        do (data.value <- json) } |> ignore
+        
+    fetch "http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json"
+    |> Promise.success (fun resp -> resp.json())                                                                       
+    |> Promise.success (fun responseObject -> data.value <- responseObject)
+    |> ignore
+
+    Console.log (data.value)
 
     if (Environment.iOS) then Console.log("Running on iOS")
     if (Environment.android) then Console.log("Running on Android")
