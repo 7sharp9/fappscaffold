@@ -61,6 +61,27 @@ var ResponseType = exports.ResponseType = function ResponseType() {
   }
 };
 
-var Globals = exports.Globals = function Globals() {
-  _classCallCheck(this, Globals);
+var Globals = exports.Globals = function ($exports) {
+  var Promise = $exports.Promise = function ($exports) {
+    var either = $exports.either = function (a, b, pr) {
+      return pr.then(a, b);
+    };
+
+    var lift = $exports.lift = function (a) {
+      return Promise.resolve(a);
+    };
+
+    return $exports;
+  }({});
+
+  return $exports;
+}({});
+
+var PromiseBuilder = exports.PromiseBuilder = function PromiseBuilder() {
+  _classCallCheck(this, PromiseBuilder);
 };
+
+var PromiseBuilderImp = exports.PromiseBuilderImp = function ($exports) {
+  var promise = $exports.promise = new PromiseBuilder();
+  return $exports;
+}({});
