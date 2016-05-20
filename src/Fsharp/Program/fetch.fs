@@ -57,7 +57,7 @@ and HeaderInit =
     U2<Headers, ResizeArray<string>>
 
 and BodyInit =
-    U3<Blob, FormData, string>
+    (*U3<Blob, FormData,*) string(*>*)
 
 and RequestInfo =
     U2<Request, string>
