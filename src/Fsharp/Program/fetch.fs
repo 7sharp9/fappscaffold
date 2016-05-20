@@ -2,9 +2,10 @@ namespace Fuse
 open System
 open System.Text.RegularExpressions
 open Fable.Core
+open Fable.Import
 open Fable.Import.JS
 
-type [<Import("*","Request")>] Request(input: U2<string, Request>, ?init: RequestInit) =
+type [<AbstractClass; Import("*","Request")>] Request(input: U2<string, Request>, ?init: RequestInit) =
     inherit Body()
 
 and RequestInit =
@@ -38,10 +39,10 @@ and [<StringEnum>] RequestCache =
 and [<Import("*","Headers")>] Headers() =
     class end
 
-and [<Import("*","Body")>] Body() =
-    class end
+and [<AbstractClass; Import("*","Body")>] Body() =
+    abstract json<'T> : unit -> Promise<'T>
 
-and [<Import("*","Response")>] Response(?body: BodyInit, ?init: ResponseInit) =
+and [<AbstractClass; Import("*","Response")>] Response(?body: BodyInit, ?init: ResponseInit) =
     inherit Body()
 
 
@@ -65,7 +66,38 @@ and RequestInfo =
 and Window =
     abstract fetch: url: U2<string, Request> * ?init: RequestInit -> Promise<Response>
 
-type Globals =
-    [<Global>] static member fetch with get(): obj = failwith "JS only" and set(v: obj): unit = failwith "JS only"
+[<AutoOpen>]
+module Globals =
+    [<Global>]
+    let fetch(url: string): Promise<Request> = failwith "JS only"
 
+    module Promise =
+        let inline success (a : 'T -> 'R) (pr : Promise<'T>) : Promise<'R> =
+            pr?``then`` $ a |> unbox
+
+        let inline bind (a : 'T -> Promise<'R>) (pr : Promise<'T>) : Promise<'R> =
+            pr?bind $ a |> unbox
+
+        //let fail (a : obj -> 'T)  (pr : Promise<'T>) : Promise<'T> =
+        //    pr.catch(unbox a)
+
+        let either (a : 'T -> 'R) (b : obj -> 'R)  (pr : Promise<'T>) : Promise<'R> =
+            pr?``then`` $ (a, b) |> unbox
+
+        let lift<'T> (a : 'T) : Promise<'T> =
+            Promise.resolve(U2.Case1 a)
+
+        //let toPromise (a : Thenable<'T>) = a |> unbox<Promise<'T>>
+
+        //let toThenable (a : Promise<'T>) = a |> unbox<Thenable<'T>>
+        
+type PromiseBuilder() =
+    member inline x.Bind(m,f) = Globals.Promise.success f m
+    member inline x.Return(a) = Globals.Promise.lift a
+    member inline x.ReturnFrom(a) = a
+    member inline x.Zero() = Promise.resolve()
+
+[<AutoOpen>]
+module PromiseBuilderImp =
+    let promise = PromiseBuilder()
 

@@ -3,7 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.X = exports.buttonClicked = exports.obsU = exports.untypedProjection = exports.untypedObservable = exports.obsZ = exports.numNames = exports.names = exports.Player = exports.kiss = exports.obsY = exports.unsafeObsX = exports.obsX = exports.observableNumber = exports.observableString = exports.timer = exports.counter = undefined;
+exports.X = exports.buttonClicked = exports.obsU = exports.untypedProjection = exports.untypedObservable = exports.obsZ = exports.numNames = exports.names = exports.Player = exports.kiss = exports.obsY = exports.unsafeObsX = exports.obsX = exports.observableNumber = exports.observableString = exports.timer = exports.counter = exports.data = undefined;
+
+var _Observable = require("./Observable");
+
+var _fetch = require("./fetch");
 
 var _Environment = require("FuseJS/Environment");
 
@@ -16,8 +20,6 @@ var _Lifecycle2 = _interopRequireDefault(_Lifecycle);
 var _InterApp = require("FuseJS/InterApp");
 
 var _InterApp2 = _interopRequireDefault(_InterApp);
-
-var _Observable = require("./Observable");
 
 var _Timer = require("FuseJS/Timer");
 
@@ -33,6 +35,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var data = exports.data = (0, _Observable.create)();
+
+(function (builder_) {
+  return fetch("http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json").then(function (_arg1) {
+    var req;
+    return req = _arg1, req.json().then(function (_arg2) {
+      var json;
+      return json = _arg2, data.value = json, Promise.resolve();
+    });
+  });
+})(_fetch.PromiseBuilderImp.promise);
+
+fetch("http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json").then(function (resp) {
+  return resp.json();
+}).then(function (responseObject) {
+  data.value = responseObject;
+});
+console.log(data.value);
 _Environment2.default.iOS ? console.log("Running on iOS") : null;
 _Environment2.default.android ? console.log("Running on Android") : null;
 _Environment2.default.preview ? console.log("Running in preview mode") : null;
