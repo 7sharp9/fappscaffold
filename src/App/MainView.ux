@@ -30,9 +30,10 @@
 			<Text Value="{numNames}" />
 			<Text Value="{untypedProjection}" />
 			<Text Value="{counter}" />
-			<Grid>
+			<ScrollView>
+			<Grid ColumnCount="3" >
 				<Each Items="{data.colorsArray}">
-					<DockPanel Height="60" Margin="10,0">
+					<DockPanel Height="80" Margin="10,0">
 						<Panel DockPanel.Dock="Top" Margin="10" Height="30">
 							<Rectangle Layer="Background" CornerRadius="10" Fill="#fff"/>
 							<Text Value="{colorName}" TextAlignment="Center" Alignment="Center" />
@@ -42,6 +43,7 @@
 					</DockPanel>
 				</Each>
 			</Grid>
+		</ScrollView>
 		</StackPanel>
 		
 	</ClientPanel>
