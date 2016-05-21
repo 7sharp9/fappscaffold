@@ -2,8 +2,6 @@
 
 open System
 open Fuse
-open Fable.Core
-open Fable.Import
 
 //then 
 //                <Func<T, U2<TResult, JS.PromiseLike<TResult>>>> *
@@ -12,11 +10,6 @@ open Fable.Import
 //then 
 //                <Func<T, U2<TResult, JS.PromiseLike<TResult>>>> *
 //                <Func<obj, Unit>> onrejected) -> TResult
-
-
-    
-    
-
 
 module Module1 =    
     
