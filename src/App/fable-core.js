@@ -1,5 +1,22 @@
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 /* global define */
 
+(function (global, factory) {
+  if (typeof define === "function" && define.amd) {
+    define(["exports"], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(exports);
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports);
+    global.unknown = mod.exports;
+  }
+})(undefined, function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
@@ -9,8 +26,8 @@
   var FSymbol = exports.Symbol = {
     interfaces: Symbol("interfaces")
   };
-  
-  exports.Choice = function Choice(t, d) {
+
+  var Choice = exports.Choice = function Choice(t, d) {
     this.Case = t;
     this.Fields = [d];
   };
@@ -24,29 +41,27 @@
       for (var i = 0; i < infcs.length; i++) {
         curInfcs.push(infcs[i]);
       }
-    }
-    else {
+    } else {
       obj[FSymbol.interfaces] = infcs;
     }
   };
   Util.hasInterface = function (obj, infc) {
-    return Array.isArray(obj[FSymbol.interfaces]) &&
-      obj[FSymbol.interfaces].indexOf(infc) >= 0;
+    return Array.isArray(obj[FSymbol.interfaces]) && obj[FSymbol.interfaces].indexOf(infc) >= 0;
   };
   Util.getRestParams = function (args, idx) {
     for (var _len = args.length, restArgs = Array(_len > idx ? _len - idx : 0), _key = idx; _key < _len; _key++) {
       restArgs[_key - idx] = args[_key];
-    }    
+    }
     return restArgs;
   };
   Util.compareTo = function (x, y) {
-    function sortIfMapOrSet (o) {
+    function sortIfMapOrSet(o) {
       return o instanceof Map || o instanceof Set ? Array.from(o).sort() : o;
     }
-    if (typeof x != typeof y) {
+    if ((typeof x === "undefined" ? "undefined" : _typeof(x)) != (typeof y === "undefined" ? "undefined" : _typeof(y))) {
       return -1;
-    }    
-    if (x != null && y != null && typeof x == "object" && typeof y == "object") {
+    }
+    if (x != null && y != null && (typeof x === "undefined" ? "undefined" : _typeof(x)) == "object" && (typeof y === "undefined" ? "undefined" : _typeof(y)) == "object") {
       var lengthComp;
       if (Object.getPrototypeOf(x) != Object.getPrototypeOf(y)) {
         return -1;
@@ -58,15 +73,16 @@
         }, 0, sortIfMapOrSet(x), sortIfMapOrSet(y));
       }
       if (x instanceof Date && y instanceof Date) {
-          return x < y ? -1 : (x > y ? 1 : 0);
-      }      
-      var keys1 = Object.getOwnPropertyNames(x), keys2 = Object.getOwnPropertyNames(y);
+        return x < y ? -1 : x > y ? 1 : 0;
+      }
+      var keys1 = Object.getOwnPropertyNames(x),
+          keys2 = Object.getOwnPropertyNames(y);
       lengthComp = Util.compareTo(keys1.length, keys2.length);
       return lengthComp != 0 ? lengthComp : Seq.fold2(function (prev, k1, k2) {
         return prev != 0 ? prev : Util.compareTo(x[k1], y[k2]);
       }, 0, keys1.sort(), keys2.sort());
     }
-    return x < y ? -1 : (x > y ? 1 : 0);
+    return x < y ? -1 : x > y ? 1 : 0;
   };
   Util.createObj = function (fields) {
     return Seq.fold(function (acc, kv) {
@@ -77,42 +93,49 @@
 
   var TimeSpan = exports.TimeSpan = {};
   TimeSpan.create = TimeSpan.fromTicks = function () {
-    var d=0,h=0,m=0,s=0,ms=0;
+    var d = 0,
+        h = 0,
+        m = 0,
+        s = 0,
+        ms = 0;
     switch (arguments.length) {
-      case 1: // ticks
+      case 1:
+        // ticks
         return arguments[0] / 10000;
-      case 3: // h,m,s
+      case 3:
+        // h,m,s
         h = arguments[0], m = arguments[1], s = arguments[2];
         break;
-      default: // d,h,m,s,ms
+      default:
+        // d,h,m,s,ms
         d = arguments[0], h = arguments[1], m = arguments[2], s = arguments[3], ms = arguments[4] || 0;
         break;
     }
     return d * 86400000 + h * 3600000 + m * 60000 + s * 1000 + ms;
   };
   TimeSpan.fromDays = function (d) {
-    return TimeSpan.create(d,0,0,0);
+    return TimeSpan.create(d, 0, 0, 0);
   };
   TimeSpan.fromHours = function (h) {
-    return TimeSpan.create(h,0,0);
+    return TimeSpan.create(h, 0, 0);
   };
   TimeSpan.fromMinutes = function (m) {
-    return TimeSpan.create(0,m,0);
+    return TimeSpan.create(0, m, 0);
   };
   TimeSpan.fromSeconds = function (s) {
-    return TimeSpan.create(0,0,s);
+    return TimeSpan.create(0, 0, s);
   };
   TimeSpan.days = function (ts) {
     return Math.floor(ts / 86400000);
   };
   TimeSpan.hours = function (ts) {
-    return Math.floor((ts % 86400000) / 3600000);
+    return Math.floor(ts % 86400000 / 3600000);
   };
   TimeSpan.minutes = function (ts) {
-    return Math.floor((ts % 3600000) / 60000);
+    return Math.floor(ts % 3600000 / 60000);
   };
   TimeSpan.seconds = function (ts) {
-    return Math.floor((ts % 60000) / 1000);
+    return Math.floor(ts % 60000 / 1000);
   };
   TimeSpan.milliseconds = function (ts) {
     return Math.floor(ts % 1000);
@@ -143,13 +166,11 @@
     return ts1 - ts2;
   };
   TimeSpan.compareTo = TimeSpan.compare = Util.compareTo;
-  
+
   var FDate = exports.Date = {};
   FDate.__changeKind = function (d, kind) {
     var d2;
-    return d.kind == kind
-      ? d
-      : (d2 = new Date(d.getTime()), d2.kind = kind, d2);  
+    return d.kind == kind ? d : (d2 = new Date(d.getTime()), d2.kind = kind, d2);
   };
   FDate.__getValue = function (d, key) {
     return d.kind == 1 ? d['getUTC' + key]() : d['get' + key]();
@@ -160,7 +181,7 @@
   FDate.maxValue = function () {
     return FDate.parse(8640000000000000, 1);
   };
-  FDate.parse = function(v, kind) {
+  FDate.parse = function (v, kind) {
     var date = v == null ? new Date() : new Date(v);
     if (isNaN(date.getTime())) {
       throw "The string is not a valid Date.";
@@ -168,16 +189,15 @@
     date.kind = kind || 2; // Local
     return date;
   };
-  FDate.create = function(year, month, day, h, m, s, ms, kind) {
+  FDate.create = function (year, month, day, h, m, s, ms, kind) {
     h = h || 0, m = m || 0, s = s || 0, ms = ms || 0, kind = kind || 2;
     var date = kind === 1 // UTC
-      ? new Date(Date.UTC(year, month - 1, day, h, m, s, ms))
-      : new Date(year, month - 1, day, h, m, s, ms);
+    ? new Date(Date.UTC(year, month - 1, day, h, m, s, ms)) : new Date(year, month - 1, day, h, m, s, ms);
     if (isNaN(date.getTime())) {
       throw "The parameters describe an unrepresentable Date.";
     }
     date.kind = kind;
-    return date
+    return date;
   };
   FDate.now = FDate.parse;
   FDate.utcNow = function () {
@@ -187,16 +207,13 @@
     return FDate.date(FDate.now());
   };
   FDate.isLeapYear = function (year) {
-    return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+    return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
   };
   FDate.daysInMonth = function (year, month) {
     if (month == 2) {
       return FDate.isLeapYear(year) ? 29 : 28;
-    }
-    else {
-      return month >= 8
-        ? (month % 2 == 0 ? 31 : 30)
-        : (month % 2 == 0 ? 30 : 31)
+    } else {
+      return month >= 8 ? month % 2 == 0 ? 31 : 30 : month % 2 == 0 ? 30 : 31;
     }
   };
   FDate.toUniversalTime = function (d) {
@@ -233,11 +250,11 @@
     return FDate.__getValue(d, "FullYear");
   };
   FDate.ticks = FDate.toBinary = function (d) {
-    return (d.getTime() + 6.2135604e+13 /* millisecondsJSOffset */ ) * 10000;
+    return (d.getTime() + 6.2135604e+13 /* millisecondsJSOffset */) * 10000;
   };
   FDate.dayOfWeek = function (d) {
     return FDate.__getValue(d, "Day");
-  };  
+  };
   FDate.dayOfYear = function (d) {
     var year = FDate.year(d),
         month = FDate.month(d),
@@ -273,8 +290,7 @@
         newYear = FDate.year(d) + v,
         daysInMonth = FDate.daysInMonth(newYear, newMonth),
         newDay = Math.min(daysInMonth, FDate.day(d));
-    return FDate.create(newYear, newMonth, newDay,
-      FDate.hour(d), FDate.minute(d), FDate.second(d), FDate.millisecond(d), d.kind);
+    return FDate.create(newYear, newMonth, newDay, FDate.hour(d), FDate.minute(d), FDate.second(d), FDate.millisecond(d), d.kind);
   };
   FDate.addMonths = function (d, v) {
     var newMonth = FDate.month(d) + v,
@@ -284,22 +300,18 @@
       newMonth_ = newMonth % 12;
       yearOffset = Math.floor(newMonth / 12);
       newMonth = newMonth_;
-    }
-    else if (newMonth < 1) {
-      newMonth_ = 12 + (newMonth % 12);
+    } else if (newMonth < 1) {
+      newMonth_ = 12 + newMonth % 12;
       yearOffset = Math.floor(newMonth / 12) + (newMonth_ == 12 ? -1 : 0);
       newMonth = newMonth_;
     }
     var newYear = FDate.year(d) + yearOffset;
     var daysInMonth = FDate.daysInMonth(newYear, newMonth);
     var newDay = Math.min(daysInMonth, FDate.day(d));
-    return FDate.create(newYear, newMonth, newDay,
-        FDate.hour(d), FDate.minute(d), FDate.second(d), FDate.millisecond(d), d.kind);
+    return FDate.create(newYear, newMonth, newDay, FDate.hour(d), FDate.minute(d), FDate.second(d), FDate.millisecond(d), d.kind);
   };
   FDate.subtract = FDate.op_Subtraction = function (d, that) {
-    return typeof that == "number"
-      ? FDate.parse(d.getTime() - that, d.kind)
-      : d.getTime() - that.getTime();
+    return typeof that == "number" ? FDate.parse(d.getTime() - that, d.kind) : d.getTime() - that.getTime();
   };
   FDate.toLongDateString = function (d) {
     return d.toDateString();
@@ -318,27 +330,86 @@
   };
   FDate.compareTo = FDate.compare = Util.compareTo;
 
+  var Timer = exports.Timer = function Timer(interval) {
+    this.interval = interval > 0 ? interval : 100;
+    this.autoReset = true;
+    this._elapsed = new Event();
+  };
+  Object.defineProperty(Timer.prototype, 'elapsed', {
+    get: function get() {
+      return this._elapsed;
+    }
+  });
+  Object.defineProperty(Timer.prototype, 'enabled', {
+    get: function get() {
+      return this._enabled;
+    },
+    set: function set(x) {
+      if (!this._isDisposed && this._enabled != x) {
+        if (this._enabled = x) {
+          if (this.autoReset) {
+            var _this = this;
+            this._intervalId = setInterval(function () {
+              if (!_this.autoReset) {
+                _this.enabled = false;
+              }
+              _this._elapsed.trigger(new Date());
+            }, this.interval);
+          } else {
+            var _this = this;
+            this._timeoutId = setTimeout(function () {
+              _this.enabled = false;
+              _this._timeoutId = 0;
+              if (_this.autoReset) {
+                _this.enabled = true;
+              }
+              _this._elapsed.trigger(new Date());
+            }, this.interval);
+          }
+        } else {
+          if (this._timeoutId) {
+            clearTimeout(this._timeoutId);
+            this._timeoutId = 0;
+          }
+          if (this._intervalId) {
+            clearInterval(this._intervalId);
+            this._intervalId = 0;
+          }
+        }
+      }
+    }
+  });
+  Timer.prototype.dispose = Timer.prototype.close = function () {
+    this.enabled = false;
+    this._isDisposed = true;
+  };
+  Timer.prototype.start = function () {
+    this.enabled = true;
+  };
+  Timer.prototype.stop = function () {
+    this.enabled = false;
+  };
+  Util.setInterfaces(Timer.prototype, ["System.IDisposable"]);
+
   var FString = exports.String = {};
   FString.fsFormatRegExp = /%([0+ ]*)(-?\d+)?(?:\.(\d+))?(\w)/;
   FString.fsFormat = function (str) {
     function isObject(x) {
-      return x !== null && typeof x === 'object'
-        && !(x instanceof Number) && !(x instanceof String) && !(x instanceof Boolean); 
+      return x !== null && (typeof x === "undefined" ? "undefined" : _typeof(x)) === 'object' && !(x instanceof Number) && !(x instanceof String) && !(x instanceof Boolean);
     };
     function formatOnce(str, rep) {
       return str.replace(FString.fsFormatRegExp, function (_, flags, pad, precision, format) {
         switch (format) {
-          case "f": case "F": rep = rep.toFixed(precision || 6); break;
-          case "g": case "G": rep = rep.toPrecision(precision); break;
-          case "e": case "E": rep = rep.toExponential(precision); break;
+          case "f":case "F":
+            rep = rep.toFixed(precision || 6);break;
+          case "g":case "G":
+            rep = rep.toPrecision(precision);break;
+          case "e":case "E":
+            rep = rep.toExponential(precision);break;
           case "A":
-            rep = ( (rep instanceof Map) ? "map " : 
-                    (rep instanceof Set) ? "set " : "") + JSON.stringify(rep, function(k, v) {
-                    return v && v[Symbol.iterator] 
-                             && !Array.isArray(v) 
-                             && isObject(v)
-                             ? Array.from(v) : v;
-                  });
+            rep = (rep instanceof Map ? "map " : rep instanceof Set ? "set " : "") + JSON.stringify(rep, function (k, v) {
+              return v && v[Symbol.iterator] && !Array.isArray(v) && isObject(v) ? Array.from(v) : v;
+            });
             break;
         }
         var plusPrefix = flags.indexOf('+') >= 0 && parseInt(rep) >= 0;
@@ -350,18 +421,16 @@
       });
     }
     function makeFn(str) {
-      return function(rep) {
+      return function (rep) {
         var str2 = formatOnce(str, rep);
-        return FString.fsFormatRegExp.test(str2)
-                ? makeFn(str2) : _cont(str2);
-      }
+        return FString.fsFormatRegExp.test(str2) ? makeFn(str2) : _cont(str2);
+      };
     }
     var _cont;
     return function (cont) {
       _cont = cont;
-      return FString.fsFormatRegExp.test(str)
-                ? makeFn(str) : _cont(str);
-    }
+      return FString.fsFormatRegExp.test(str) ? makeFn(str) : _cont(str);
+    };
   };
   FString.formatRegExp = /\{(\d+)(,-?\d+)?(?:\:(.+?))?\}/g;
   FString.format = function (str, args) {
@@ -370,41 +439,40 @@
       var rep = args[idx];
       if (typeof rep === 'number') {
         switch ((format || '').substring(0, 1)) {
-          case "f": case "F":
+          case "f":case "F":
             rep = format.length > 1 ? rep.toFixed(format.substring(1)) : rep.toFixed(2);
             break;
-          case "g": case "G":
+          case "g":case "G":
             rep = format.length > 1 ? rep.toPrecision(format.substring(1)) : rep.toPrecision();
             break;
-          case "e": case "E":
+          case "e":case "E":
             rep = format.length > 1 ? rep.toExponential(format.substring(1)) : rep.toExponential();
             break;
-          case "p": case "P":
+          case "p":case "P":
             rep = (format.length > 1 ? (rep * 100).toFixed(format.substring(1)) : (rep * 100).toFixed(2)) + " %";
             break;
         }
-      }
-      else if (rep instanceof Date) {
+      } else if (rep instanceof Date) {
         if (format.length === 1) {
           switch (format) {
-            case "D": rep = rep.toDateString(); break;
-            case "T": rep = rep.toLocaleTimeString(); break;
-            case "d": rep = rep.toLocaleDateString(); break;
-            case "t": rep = rep.toLocaleTimeString().replace(/:\d\d(?!:)/, ''); break;
+            case "D":
+              rep = rep.toDateString();break;
+            case "T":
+              rep = rep.toLocaleTimeString();break;
+            case "d":
+              rep = rep.toLocaleDateString();break;
+            case "t":
+              rep = rep.toLocaleTimeString().replace(/:\d\d(?!:)/, '');break;
           }
         }
         rep = format.replace(/\w+/g, function (match2) {
           var rep2 = match2;
           switch (match2.substring(0, 1)) {
             case "y":
-              rep2 = match2.length < 4
-                      ? FDate.year(rep) % 100
-                      : FDate.year(rep);
+              rep2 = match2.length < 4 ? FDate.year(rep) % 100 : FDate.year(rep);
               break;
             case "h":
-              rep2 = rep.getHours() > 12
-                      ? FDate.hour(rep) % 12
-                      : FDate.hour(rep);
+              rep2 = rep.getHours() > 12 ? FDate.hour(rep) % 12 : FDate.hour(rep);
               break;
             case "M":
               rep2 = FDate.month(rep);
@@ -456,7 +524,7 @@
     str = String(str);
     len = len - str.length;
     while (++i < len) {
-        str = isRight ? str + ch : ch + str;
+      str = isRight ? str + ch : ch + str;
     }
     return str;
   };
@@ -467,8 +535,10 @@
     return str.replace(new RegExp(FRegExp.escape(search), "g"), replace);
   };
   FString.replicate = function (n, x) {
-    return FString.init(n, function () { return x });
-  };  
+    return FString.init(n, function () {
+      return x;
+    });
+  };
   FString.split = function (str, splitters, removeEmpty) {
     splitters = Array.isArray(splitters) ? splitters : Util.getRestParams(arguments, 1);
     var reg = new RegExp("[" + FRegExp.escape(splitters.join("")) + "]", "g");
@@ -478,13 +548,12 @@
     });
   };
   FString.join = FString.concat = function (delimiter, xs) {
-    xs = typeof xs == "string" 
-          ? Util.getRestParams(arguments, 1) : xs;
+    xs = typeof xs == "string" ? Util.getRestParams(arguments, 1) : xs;
     return (Array.isArray(xs) ? xs : Array.from(xs)).join(delimiter);
   };
   FString.endsWith = function (str, search) {
     var idx = str.lastIndexOf(search);
-    return idx >= 0 && idx == (str.length - search.length);
+    return idx >= 0 && idx == str.length - search.length;
   };
 
   var FRegExp = exports.RegExp = {};
@@ -502,32 +571,27 @@
     return str.replace(/\\([\-\[\/\{\}\(\)\*\+\?\.\\\^\$\|])/g, '$1');
   };
   FRegExp.isMatch = function (str, pattern, options) {
-    var reg = str instanceof RegExp
-      ? (reg = str, str = pattern, reg.lastIndex = (options != null ? options : 0), reg)
-      : reg = FRegExp.create(pattern, options);
+    var reg = str instanceof RegExp ? (reg = str, str = pattern, reg.lastIndex = options != null ? options : 0, reg) : reg = FRegExp.create(pattern, options);
     return reg.test(str);
   };
   FRegExp.match = function (str, pattern, options) {
-    var reg = str instanceof RegExp
-      ? (reg = str, str = pattern, reg.lastIndex = (options != null ? options : 0), reg)
-      : reg = FRegExp.create(pattern, options);
+    var reg = str instanceof RegExp ? (reg = str, str = pattern, reg.lastIndex = options != null ? options : 0, reg) : reg = FRegExp.create(pattern, options);
     return reg.exec(str);
   };
   FRegExp.matches = function (str, pattern, options) {
-    var reg = str instanceof RegExp
-      ? (reg = str, str = pattern, reg.lastIndex = (options != null ? options : 0), reg)
-      : reg = FRegExp.create(pattern, options);
+    var reg = str instanceof RegExp ? (reg = str, str = pattern, reg.lastIndex = options != null ? options : 0, reg) : reg = FRegExp.create(pattern, options);
     if (!reg.global) {
-      throw "Non-global RegExp" // Prevent infinite loop
+      throw "Non-global RegExp"; // Prevent infinite loop
     }
-    var m, matches = [];
+    var m,
+        matches = [];
     while ((m = reg.exec(str)) !== null) {
-      matches.push(m)
+      matches.push(m);
     }
     return matches;
-  };  
+  };
   FRegExp.options = function (reg) {
-    var options = 256 // ECMAScript
+    var options = 256; // ECMAScript
     options |= reg.ignoreCase ? 1 : 0;
     options |= reg.multiline ? 2 : 0;
     return options;
@@ -541,42 +605,35 @@
     if (typeof replacement == "function") {
       limit = limit == null ? -1 : limit;
       offset = offset == null ? 0 : offset;
-      var replacer = function () {
+      var replacer = function replacer() {
         var res = arguments[0];
         if (limit !== 0) {
           limit--;
           var match = [];
-              var len = arguments.length;
-                for (var i = 0; i < len-2; i ++) {
+          var len = arguments.length;
+          for (var i = 0; i < len - 2; i++) {
             match.push(arguments[i]);
           }
-          match.index = arguments[len-2];
-          match.input = arguments[len-1];
+          match.index = arguments[len - 2];
+          match.input = arguments[len - 1];
           res = replacement(match);
         }
         return res;
-      }
-      return input.substring(0, offset) +
-        input.substring(offset).replace(reg, replacer);
-    }
-    else {
+      };
+      return input.substring(0, offset) + input.substring(offset).replace(reg, replacer);
+    } else {
       if (limit != null) {
         var m;
-        offset = offset == null ? 0 : offset; 
+        offset = offset == null ? 0 : offset;
         var sub1 = input.substring(offset);
         var matches = FRegExp.matches(reg, sub1);
-        var sub2 = matches.length > limit
-          ? (m = matches[limit-1], sub1.substring(0, m.index + m[0].length))
-          : sub1;
-        return input.substring(0, offset) +
-          sub2.replace(reg, replacement) +
-          input.substring(offset + sub2.length);
-      }
-      else {
+        var sub2 = matches.length > limit ? (m = matches[limit - 1], sub1.substring(0, m.index + m[0].length)) : sub1;
+        return input.substring(0, offset) + sub2.replace(reg, replacement) + input.substring(offset + sub2.length);
+      } else {
         return input.replace(reg, replacement);
       }
     }
-  };  
+  };
   FRegExp.split = function (reg, input, limit, offset) {
     if (typeof reg == "string") {
       var tmp = reg;
@@ -585,7 +642,7 @@
     }
     input = offset != null ? input.substring(offset) : input;
     return input.split(reg, limit);
-  };  
+  };
 
   var FArray = exports.Array = {};
   FArray.addRangeInPlace = function (range, xs) {
@@ -594,17 +651,19 @@
     }, range);
   };
   FArray.blit = function (source, sourceIndex, target, targetIndex, count) {
-    while(count--) {
-      target[targetIndex++] = source[sourceIndex++]
+    while (count--) {
+      target[targetIndex++] = source[sourceIndex++];
     }
   };
   FArray.partition = function (f, xs) {
-    var ys = [], zs = [], j = 0, k = 0;
+    var ys = [],
+        zs = [],
+        j = 0,
+        k = 0;
     for (var i = 0; i < xs.length; i++) {
       if (f(xs[i])) {
         ys[j++] = xs[i];
-      }
-      else {
+      } else {
         zs[k++] = xs[i];
       }
     }
@@ -612,7 +671,9 @@
   };
   FArray.permute = function (f, xs) {
     // Keep the type of the array
-    var ys = xs.map(function () { return 0 });
+    var ys = xs.map(function () {
+      return 0;
+    });
     var checkFlags = new Array(xs.length);
     for (var i = 0; i < xs.length; i++) {
       var j = f(i);
@@ -636,14 +697,13 @@
       return true;
     }
     return false;
-  }
+  };
   FArray.setSlice = function (target, lower, upper, source) {
-    var length = (upper || (target.length - 1)) - lower;
+    var length = (upper || target.length - 1) - lower;
     if (ArrayBuffer.isView(target) && source.length <= length) {
       target.set(source, lower);
-    }
-    else {
-      for (var i = lower|0, j = 0; j <= length; i++, j++) {
+    } else {
+      for (var i = lower | 0, j = 0; j <= length; i++, j++) {
         target[i] = source[j];
       }
     }
@@ -653,11 +713,12 @@
     return xs.sort(function (x, y) {
       x = f(x);
       y = f(y);
-      return (x < y ? -1 : (x == y ? 0 : 1)) * dir;
+      return (x < y ? -1 : x == y ? 0 : 1) * dir;
     });
   };
   FArray.unzip = function (xs) {
-    var bs = new Array(xs.length), cs = new Array(xs.length);
+    var bs = new Array(xs.length),
+        cs = new Array(xs.length);
     for (var i = 0; i < xs.length; i++) {
       bs[i] = xs[i][0];
       cs[i] = xs[i][1];
@@ -665,28 +726,31 @@
     return [bs, cs];
   };
   FArray.unzip3 = function (xs) {
-    var bs = new Array(xs.length), cs = new Array(xs.length), ds = new Array(xs.length);
+    var bs = new Array(xs.length),
+        cs = new Array(xs.length),
+        ds = new Array(xs.length);
     for (var i = 0; i < xs.length; i++) {
       bs[i] = xs[i][0];
       cs[i] = xs[i][1];
       ds[i] = xs[i][2];
     }
     return [bs, cs, ds];
-  };  
+  };
 
   var List = exports.List = function List(head, tail) {
     this.head = head;
     this.tail = tail;
-  }
+  };
   List.ofArray = function (args, base) {
-    var i = args.length - 1, acc = base || new List();
+    var i = args.length - 1,
+        acc = base || new List();
     for (; i >= 0; i--) {
       acc = new List(args[i], acc);
     }
     return acc;
   };
   Object.defineProperty(List.prototype, 'length', {
-    get: function () {
+    get: function get() {
       return Seq.fold(function (acc, x) {
         return acc + 1;
       }, 0, this);
@@ -695,15 +759,15 @@
   List.prototype[Symbol.iterator] = function () {
     var cur = this;
     return {
-      next: function () {
+      next: function next() {
         var tmp = cur;
         cur = cur.tail;
         return {
           done: tmp.tail == null,
           value: tmp.head
-        }
+        };
       }
-    }
+    };
   };
   List.append = List.prototype.append = function (xs, ys) {
     if (ys == null) {
@@ -729,8 +793,7 @@
       return x;
     }, xs || this);
   };
-  List.filter = List.prototype.filter =
-  List.where = List.prototype.where = function (f, xs) {
+  List.filter = List.prototype.filter = List.where = List.prototype.where = function (f, xs) {
     return List.rev(Seq.fold(function (acc, x) {
       return f(x) ? new List(x, acc) : acc;
     }, new List(), xs || this));
@@ -757,12 +820,15 @@
   };
   List.partition = List.prototype.partition = function (f, xs) {
     return Seq.fold(function (acc, x) {
-      var lacc = acc[0], racc = acc[1];
+      var lacc = acc[0],
+          racc = acc[1];
       return f(x) ? [new List(x, lacc), racc] : [lacc, new List(x, racc)];
     }, [new List(), new List()], xs || this);
   };
   List.replicate = function (n, x) {
-    return List.init(n, function () { return x });
+    return List.init(n, function () {
+      return x;
+    });
   };
   List.rev = List.prototype.rev = function (xs) {
     return Seq.fold(function (acc, x) {
@@ -773,7 +839,8 @@
     return new List(x, new List());
   };
   List.slice = List.prototype.slice = function (lower, upper, xs) {
-    var noLower = lower == null, noUpper = upper == null;
+    var noLower = lower == null,
+        noUpper = upper == null;
     return List.rev(Seq.fold(function (acc, x, i) {
       var within = (noLower || lower <= i) && (noUpper || i <= upper);
       return within ? new List(x, acc) : acc;
@@ -820,8 +887,7 @@
           cur = iters[0].next();
           if (!cur.done) {
             return [cur.value, iters];
-          }
-          else {
+          } else {
             firstDone = true;
             iters = [null, iters[1][Symbol.iterator]()];
           }
@@ -856,29 +922,28 @@
     return Seq.delay(function () {
       var iter = xs[Symbol.iterator]();
       return Seq.unfold(function (innerIter) {
-        var cur, output = null, hasFinished = false;
+        var cur,
+            output = null,
+            hasFinished = false;
         while (!hasFinished) {
           if (innerIter == null) {
             cur = iter.next();
             if (!cur.done) {
               innerIter = cur.value[Symbol.iterator]();
-            }
-            else {
+            } else {
               hasFinished = true;
             }
-          }
-          else {
+          } else {
             cur = innerIter.next();
             if (!cur.done) {
               output = cur.value;
               hasFinished = true;
-            }
-            else {
+            } else {
               innerIter = null;
             }
           }
         }
-        return (innerIter != null && output != null) ? [output, innerIter] : null;
+        return innerIter != null && output != null ? [output, innerIter] : null;
       }, null);
     });
   };
@@ -886,10 +951,10 @@
     return Seq.concat(Seq.map(f, xs));
   };
   Seq.choose = function (f, xs) {
-    var trySkipToNext = function (iter) {
+    var trySkipToNext = function trySkipToNext(iter) {
       var cur = iter.next();
       if (!cur.done) {
-        var y = f(cur.value)
+        var y = f(cur.value);
         return y != null ? [y, iter] : trySkipToNext(iter);
       }
     };
@@ -905,8 +970,7 @@
     }, Seq.map2(function (x, y) {
       return f(x, y);
     }, xs, ys));
-    return nonZero != null
-      ? nonZero : Seq.length(xs) - Seq.length(ys);
+    return nonZero != null ? nonZero : Seq.length(xs) - Seq.length(ys);
   };
   Seq.delay = function (f) {
     var e = {};
@@ -921,19 +985,20 @@
     }, Seq.scan(function (tup, x) {
       var acc = tup[1];
       var y = f(x);
-      return acc.has(y)
-        ? [null, acc] : [x, acc.add(y)];
+      return acc.has(y) ? [null, acc] : [x, acc.add(y)];
     }, [null, new Set()], xs));
   };
   Seq.distinct = function (xs) {
-    return Seq.distinctBy(function (x) { return x }, xs);
+    return Seq.distinctBy(function (x) {
+      return x;
+    }, xs);
   };
   Seq.empty = function () {
-    return Seq.unfold(function () { });
+    return Seq.unfold(function () {});
   };
   Seq.enumerateWhile = function (cond, xs) {
     return Seq.concat(Seq.unfold(function () {
-      return (cond()) ? [xs, true] : null;
+      return cond() ? [xs, true] : null;
     }), true);
   };
   Seq.enumerateThenFinally = function (xs, finalFn) {
@@ -941,16 +1006,14 @@
       var iter;
       try {
         iter = xs[Symbol.iterator]();
-      }
-      finally {
+      } finally {
         finalFn();
       }
       return Seq.unfold(function (iter) {
         try {
           var cur = iter.next();
           return !cur.done ? [cur.value, iter] : null;
-        }
-        finally {
+        } finally {
           finalFn();
         }
       }, iter);
@@ -958,7 +1021,7 @@
   };
   Seq.enumerateUsing = function (disp, work) {
     var isDisposed = false;
-    var disposeOnce = function () {
+    var disposeOnce = function disposeOnce() {
       if (!isDisposed) {
         isDisposed = true;
         disp.dispose();
@@ -966,8 +1029,7 @@
     };
     try {
       return Seq.enumerateThenFinally(work(disp), disposeOnce);
-    }
-    finally {
+    } finally {
       disposeOnce();
     }
   };
@@ -984,26 +1046,25 @@
     return fst.value;
   };
   Seq.exists = function (f, xs) {
-    var aux = function (iter) {
+    var aux = function aux(iter) {
       var cur = iter.next();
       return !cur.done && (f(cur.value) || aux(iter));
     };
     return aux(xs[Symbol.iterator]());
   };
   Seq.exists2 = function (f, xs, ys) {
-    var aux = function (iter1, iter2) {
-      var cur1 = iter1.next(), cur2 = iter2.next();
+    var aux = function aux(iter1, iter2) {
+      var cur1 = iter1.next(),
+          cur2 = iter2.next();
       return !cur1.done && !cur2.done && (f(cur1.value, cur2.value) || aux(iter1, iter2));
     };
     return aux(xs[Symbol.iterator](), ys[Symbol.iterator]());
   };
   Seq.filter = Seq.where = function (f, xs) {
-    var trySkipToNext = function (iter) {
+    var trySkipToNext = function trySkipToNext(iter) {
       var cur = iter.next();
       if (!cur.done) {
-        return f(cur.value)
-          ? [cur.value, iter]
-          : trySkipToNext(iter);
+        return f(cur.value) ? [cur.value, iter] : trySkipToNext(iter);
       }
     };
     return Seq.delay(function () {
@@ -1013,19 +1074,19 @@
   Seq.fold = function (f, acc, xs) {
     if (Array.isArray(xs) || ArrayBuffer.isView(xs)) {
       return xs.reduce(f, acc);
-    }
-    else {
-      for (var i = 0, cur = null, iter = xs[Symbol.iterator](); ; i++) {
+    } else {
+      for (var i = 0, cur = null, iter = xs[Symbol.iterator]();; i++) {
         cur = iter.next();
-        if (cur.done) { break; }
+        if (cur.done) {
+          break;
+        }
         acc = f(acc, cur.value, i);
       }
       return acc;
     }
   };
   Seq.foldBack = function (f, xs, acc) {
-    var ar = Array.isArray(xs) || ArrayBuffer.isView(xs)
-      ? xs : Array.from(xs);
+    var ar = Array.isArray(xs) || ArrayBuffer.isView(xs) ? xs : Array.from(xs);
     for (var i = ar.length - 1; i >= 0; i--) {
       acc = f(ar[i], acc, i);
     }
@@ -1033,11 +1094,13 @@
   };
   Seq.fold2 = function (f, acc, xs, ys) {
     var iter1 = xs[Symbol.iterator](),
-      iter2 = ys[Symbol.iterator]();
-    for (var i = 0, cur1, cur2; ; i++) {
+        iter2 = ys[Symbol.iterator]();
+    for (var i = 0, cur1, cur2;; i++) {
       cur1 = iter1.next();
       cur2 = iter2.next();
-      if (cur1.done || cur2.done) { break; }
+      if (cur1.done || cur2.done) {
+        break;
+      }
       acc = f(acc, cur1.value, cur2.value, i);
     }
     return acc;
@@ -1062,16 +1125,17 @@
   };
   Seq.groupBy = function (f, xs) {
     return Seq.fold(function (acc, x) {
-      var k = f(x), vs = acc.get(k);
-      return vs != null
-        ? acc.set(k, new List(x, vs))
-        : acc.set(k, new List(x, new List()));
+      var k = f(x),
+          vs = acc.get(k);
+      return vs != null ? acc.set(k, new List(x, vs)) : acc.set(k, new List(x, new List()));
     }, new Map(), xs);
   };
   Seq.head = function (xs) {
     var iter = xs[Symbol.iterator]();
     var cur = iter.next();
-    if (cur.done) { throw "Seq was empty"; }
+    if (cur.done) {
+      throw "Seq was empty";
+    }
     return cur.value;
   };
   Seq.init = function (n, f) {
@@ -1091,12 +1155,15 @@
   Seq.item = function (i, xs) {
     if (Array.isArray(xs) || ArrayBuffer.isView(xs)) {
       return xs[i];
-    }
-    else {
-      for (var j = 0, iter = xs[Symbol.iterator](); ; j++) {
+    } else {
+      for (var j = 0, iter = xs[Symbol.iterator]();; j++) {
         var cur = iter.next();
-        if (cur.done) { break; }
-        if (j === i) { return cur.value; }
+        if (cur.done) {
+          break;
+        }
+        if (j === i) {
+          return cur.value;
+        }
       }
       throw "Seq has an insufficient number of elements";
     }
@@ -1131,17 +1198,16 @@
     }, xs);
   };
   Seq.length = function (xs) {
-    return Array.isArray(xs) || ArrayBuffer.isView(xs)
-      ? xs.length : Seq.fold(function (acc, x) {
-        return acc + 1;
-      }, 0, xs);
+    return Array.isArray(xs) || ArrayBuffer.isView(xs) ? xs.length : Seq.fold(function (acc, x) {
+      return acc + 1;
+    }, 0, xs);
   };
   Seq.map = function (f, xs) {
     return Seq.delay(function () {
       return Seq.unfold(function (iter) {
         var cur = iter.next();
         return !cur.done ? [f(cur.value), iter] : null;
-      }, xs[Symbol.iterator]())
+      }, xs[Symbol.iterator]());
     });
   };
   Seq.mapi = function (f, xs) {
@@ -1150,7 +1216,7 @@
       return Seq.unfold(function (iter) {
         var cur = iter.next();
         return !cur.done ? [f(i++, cur.value), iter] : null;
-      }, xs[Symbol.iterator]())
+      }, xs[Symbol.iterator]());
     });
   };
   Seq.map2 = function (f, xs, ys) {
@@ -1158,9 +1224,10 @@
       var iter1 = xs[Symbol.iterator]();
       var iter2 = ys[Symbol.iterator]();
       return Seq.unfold(function () {
-        var cur1 = iter1.next(), cur2 = iter2.next();
+        var cur1 = iter1.next(),
+            cur2 = iter2.next();
         return !cur1.done && !cur2.done ? [f(cur1.value, cur2.value), null] : null;
-      })
+      });
     });
   };
   Seq.mapi2 = function (f, xs, ys) {
@@ -1169,9 +1236,10 @@
       var iter1 = xs[Symbol.iterator]();
       var iter2 = ys[Symbol.iterator]();
       return Seq.unfold(function () {
-        var cur1 = iter1.next(), cur2 = iter2.next();
+        var cur1 = iter1.next(),
+            cur2 = iter2.next();
         return !cur1.done && !cur2.done ? [f(i++, cur1.value, cur2.value), null] : null;
-      })
+      });
     });
   };
   Seq.map3 = function (f, xs, ys, zs) {
@@ -1180,10 +1248,11 @@
       var iter2 = ys[Symbol.iterator]();
       var iter3 = zs[Symbol.iterator]();
       return Seq.unfold(function () {
-        var cur1 = iter1.next(), cur2 = iter2.next(), cur3 = iter3.next();
-        return !cur1.done && !cur2.done && !cur3.done
-          ? [f(cur1.value, cur2.value, cur3.value), null] : null;
-      })
+        var cur1 = iter1.next(),
+            cur2 = iter2.next(),
+            cur3 = iter3.next();
+        return !cur1.done && !cur2.done && !cur3.done ? [f(cur1.value, cur2.value, cur3.value), null] : null;
+      });
     });
   };
   Seq.max = function (xs) {
@@ -1220,42 +1289,47 @@
       throw "Step cannot be 0";
     }
     return Seq.unfold(function (x) {
-      return (step > 0 && x <= last) || (step < 0 && x >= last)
-        ? [x, x + step] : null;
+      return step > 0 && x <= last || step < 0 && x >= last ? [x, x + step] : null;
     }, first);
   };
   Seq.rangeChar = function (first, last) {
     return Seq.unfold(function (x) {
-      return (x <= last) ? [x, String.fromCharCode(x.charCodeAt(0) + 1)] : null;
+      return x <= last ? [x, String.fromCharCode(x.charCodeAt(0) + 1)] : null;
     }, first);
   };
   Seq.range = function (first, last) {
     return Seq.rangeStep(first, 1, last);
   };
   Seq.readonly = function (xs) {
-    return Seq.map(function (x) { return x }, xs);
+    return Seq.map(function (x) {
+      return x;
+    }, xs);
   };
   Seq.reduce = function (f, xs) {
     if (Array.isArray(xs) || ArrayBuffer.isView(xs)) {
       return xs.reduce(f);
-    }
-    else {
+    } else {
       var iter = xs[Symbol.iterator]();
       var cur = iter.next();
-      if (cur.done) { throw "Seq was empty"; }
+      if (cur.done) {
+        throw "Seq was empty";
+      }
       var acc = cur.value;
       for (;;) {
         cur = iter.next();
-        if (cur.done) { break; }
+        if (cur.done) {
+          break;
+        }
         acc = f(acc, cur.value);
       }
       return acc;
     }
   };
   Seq.reduceBack = function (f, xs) {
-    var ar = Array.isArray(xs) || ArrayBuffer.isView(xs)
-      ? xs : Array.from(xs);
-    if (ar.length === 0) { throw "Seq was empty"; }
+    var ar = Array.isArray(xs) || ArrayBuffer.isView(xs) ? xs : Array.from(xs);
+    if (ar.length === 0) {
+      throw "Seq was empty";
+    }
     var acc = ar[ar.length - 1];
     for (var i = ar.length - 2; i >= 0; i--) {
       acc = f(ar[i], acc, i);
@@ -1263,11 +1337,12 @@
     return acc;
   };
   Seq.replicate = function (n, x) {
-    return Seq.init(n, function () { return x });
+    return Seq.init(n, function () {
+      return x;
+    });
   };
   Seq.rev = function (xs) {
-    var ar = Array.isArray(xs) || ArrayBuffer.isView(xs)
-      ? xs.slice(0) : Array.from(xs);
+    var ar = Array.isArray(xs) || ArrayBuffer.isView(xs) ? xs.slice(0) : Array.from(xs);
     return ar.reverse();
   };
   Seq.scan = function (f, seed, xs) {
@@ -1276,8 +1351,7 @@
       return Seq.unfold(function (acc) {
         if (acc == null) {
           return [seed, seed];
-        }
-        else {
+        } else {
           var cur = iter.next();
           if (!cur.done) {
             acc = f(acc, cur.value);
@@ -1331,7 +1405,7 @@
   Seq.sortDescending = function (f, xs) {
     var ys = Array.from(xs);
     return Seq.ofArray(ys.sort(function (x, y) {
-      return y < x ? -1 : (x == y ? 0 : 1);
+      return y < x ? -1 : x == y ? 0 : 1;
     }));
   };
   Seq.sortByDescending = function (f, xs) {
@@ -1339,14 +1413,18 @@
     return Seq.ofArray(FArray.sortInPlaceBy(f, ys, -1));
   };
   Seq.sum = function (xs, add) {
-    add = add || function (x, y) { return x + y };
+    add = add || function (x, y) {
+      return x + y;
+    };
     return Seq.reduce(function (acc, x) {
       return add(acc, x);
     }, xs);
   };
   Seq.sumBy = function (f, xs, add) {
     var fst = true;
-    add = add || function (x, y) { return x + y };
+    add = add || function (x, y) {
+      return x + y;
+    };
     return Seq.reduce(function (acc, x) {
       acc = fst ? f(acc) : acc, fst = false;
       return acc + f(x);
@@ -1355,9 +1433,11 @@
   Seq.tail = function (xs) {
     var iter = xs[Symbol.iterator]();
     var cur = iter.next();
-    if (cur.done) { throw "Seq was empty"; }
+    if (cur.done) {
+      throw "Seq was empty";
+    }
     var e = {};
-    e[Symbol.iterator] =function () {
+    e[Symbol.iterator] = function () {
       return iter;
     };
     return e;
@@ -1370,8 +1450,7 @@
           var cur = iter.next();
           if (!cur.done) {
             return [cur.value, i + 1];
-          }
-          else if (!truncate) {
+          } else if (!truncate) {
             throw "Seq has not enough elements";
           }
         }
@@ -1393,9 +1472,11 @@
     });
   };
   Seq.tryFind = function (f, xs) {
-    for (var i = 0, iter = xs[Symbol.iterator](), cur; ; i++) {
+    for (var i = 0, iter = xs[Symbol.iterator](), cur;; i++) {
       cur = iter.next();
-      if (cur.done) { break; }
+      if (cur.done) {
+        break;
+      }
       if (f(cur.value, i)) {
         return cur.value;
       }
@@ -1409,9 +1490,11 @@
     return res;
   };
   Seq.tryFindIndex = function (f, xs) {
-    for (var i = 0, iter = xs[Symbol.iterator](), cur; ; i++) {
+    for (var i = 0, iter = xs[Symbol.iterator](), cur;; i++) {
       cur = iter.next();
-      if (cur.done) { break; }
+      if (cur.done) {
+        break;
+      }
       if (f(cur.value, i)) {
         return i;
       }
@@ -1425,9 +1508,11 @@
     return res;
   };
   Seq.tryPick = function (f, xs) {
-    for (var i = 0, iter = xs[Symbol.iterator](), cur; ; i++) {
+    for (var i = 0, iter = xs[Symbol.iterator](), cur;; i++) {
       cur = iter.next();
-      if (cur.done) { break; }
+      if (cur.done) {
+        break;
+      }
       var y = f(cur.value, i);
       if (y != null) {
         return y;
@@ -1445,17 +1530,16 @@
     var e = {};
     e[Symbol.iterator] = function () {
       return {
-        next: function () {
+        next: function next() {
           var res = f(acc);
           if (res != null) {
             acc = res[1];
             return { done: false, value: res[0] };
-          }
-          else {
+          } else {
             return { done: true };
           }
         }
-      }
+      };
     };
     return e;
   };
@@ -1487,7 +1571,7 @@
     var set = new Set(set1);
     set2.forEach(function (x) {
       set.add(x);
-    })
+    });
     return set;
   };
   FSet.unionMany = function (sets) {
@@ -1502,15 +1586,14 @@
     var set = new Set(set1);
     set2.forEach(function (x) {
       set.delete(x);
-    })
+    });
     return set;
   };
   FSet.intersect = function (set1, set2) {
     var set = new Set(set1);
     set1.forEach(function (x) {
-      if (!set2.has(x))
-        set.delete(x);
-    })
+      if (!set2.has(x)) set.delete(x);
+    });
     return set;
   };
   FSet.intersectMany = function (sets) {
@@ -1528,17 +1611,17 @@
       }
     }, ar[0]);
     return set;
-  };  
+  };
   FSet.isProperSubsetOf = FSet.isProperSubset = function (set1, set2) {
     return Seq.forall(function (x) {
-      return set2.has(x);    
+      return set2.has(x);
     }, set1) && Seq.exists(function (x) {
       return !set1.has(x);
     }, set2);
   };
   FSet.isSubsetOf = FSet.isSubset = function (set1, set2) {
     return Seq.forall(function (x) {
-      return set2.has(x);    
+      return set2.has(x);
     }, set1);
   };
   FSet.isProperSupersetOf = FSet.isProperSuperset = function (set1, set2) {
@@ -1548,22 +1631,21 @@
     return FSet.isSubset(set2, set1);
   };
   FSet.copyTo = function (xs, arr, arrayIndex, count) {
-      if (!arr instanceof Array)
-          throw "Array is invalid";
+    if (!arr instanceof Array) throw "Array is invalid";
 
-      count = count || arr.length;
-      var i = arrayIndex || 0;
-      var iter = xs[Symbol.iterator]();
-      while (count--) {
-          var el = iter.next();
-          if (el.done)
-              break;
-          arr[i++] = el.value;
-      };
+    count = count || arr.length;
+    var i = arrayIndex || 0;
+    var iter = xs[Symbol.iterator]();
+    while (count--) {
+      var el = iter.next();
+      if (el.done) break;
+      arr[i++] = el.value;
+    };
   };
   FSet.partition = function (f, xs) {
     return Seq.fold(function (acc, x) {
-      var lacc = acc[0], racc = acc[1];
+      var lacc = acc[0],
+          racc = acc[1];
       return f(x) ? [lacc.add(x), racc] : [lacc, racc.add(x)];
     }, [new Set(), new Set()], xs);
   };
@@ -1588,10 +1670,10 @@
       return acc.set(kv[0], kv[1]);
     }, new Map(), xs);
   };
-        // | "exists" | "fold" | "foldBack" | "forall" | "iter" ->
+  // | "exists" | "fold" | "foldBack" | "forall" | "iter" ->
   FMap.containsValue = function (v, map) {
     return Seq.fold(function (acc, k) {
-      return acc || (map.get(k) === v); 
+      return acc || map.get(k) === v;
     }, false, map.keys());
   };
   FMap.exists = function (f, map) {
@@ -1628,10 +1710,13 @@
     return Seq.fold(function (acc, kv) {
       return acc.set(kv[0], f(kv[0], kv[1]));
     }, new Map(), map);
-  };  
+  };
   FMap.partition = function (f, map) {
     return Seq.fold(function (acc, kv) {
-      var lacc = acc[0], racc = acc[1], k = kv[0], v = kv[1];
+      var lacc = acc[0],
+          racc = acc[1],
+          k = kv[0],
+          v = kv[1];
       return f(k, v) ? [lacc.set(k, v), racc] : [lacc, racc.set(k, v)];
     }, [new Map(), new Map()], map);
   };
@@ -1665,26 +1750,27 @@
   var Async = exports.Async = {};
   Async.__protectedCont = function (f) {
     return function (ctx) {
-      if (ctx.cancelToken != null && ctx.cancelToken.isCancelled) {
-        throw "cancelled";
-      }
-      try {
-        f(ctx);
-      }
-      catch (err) {
-        ctx.onError(err);
+      if (ctx.cancelToken.isCancelled) {
+        ctx.onCancel("cancelled");
+      } else {
+        try {
+          f(ctx);
+        } catch (err) {
+          ctx.onError(err);
+        }
       }
     };
-  }
+  };
   Async.bind = function (work, cont) {
     return Async.__protectedCont(function (ctx) {
       work({
-        onSuccess: function (x) {
+        onSuccess: function onSuccess(x) {
           return cont(x)(ctx);
         },
         onError: ctx.onError,
+        onCancel: ctx.onCancel,
         cancelToken: ctx.cancelToken
-      })
+      });
     });
   };
   Async.combine = function (work1, work2) {
@@ -1699,16 +1785,14 @@
   };
   Async.for = function (seq, body) {
     var iter = seq[Symbol.iterator](),
-      cur = iter.next();
+        cur = iter.next();
     return Async.while(function () {
       return !cur.done;
-    },
-      Async.delay(function () {
-        var res = body(cur.value);
-        cur = iter.next();
-        return res;
-      })
-    );
+    }, Async.delay(function () {
+      var res = body(cur.value);
+      cur = iter.next();
+      return res;
+    }));
   };
   Async.return = function (x) {
     return Async.__protectedCont(function (ctx) {
@@ -1721,13 +1805,17 @@
   Async.tryFinally = function (work, finalFn) {
     return Async.__protectedCont(function (ctx) {
       work({
-        onSuccess: function (x) {
+        onSuccess: function onSuccess(x) {
           finalFn();
           ctx.onSuccess(x);
         },
-        onError: function (x) {
+        onError: function onError(x) {
           finalFn();
           ctx.onError(x);
+        },
+        onCancel: function onCancel(x) {
+          finalFn();
+          ctx.onCancel(x);
         },
         cancelToken: ctx.cancelToken
       });
@@ -1737,11 +1825,12 @@
     return Async.__protectedCont(function (ctx) {
       work({
         onSuccess: ctx.onSuccess,
+        onCancel: ctx.onCancel,
         cancelToken: ctx.cancelToken,
-        onError: function (ex) {
+        onError: function onError(ex) {
           ctx.onSuccess(catchFn(ex));
         }
-      })
+      });
     });
   };
   Async.using = function (disp, cont) {
@@ -1754,8 +1843,7 @@
       return Async.bind(body, function () {
         return Async.while(cond, body);
       });
-    }
-    else {
+    } else {
       return Async.return();
     }
   };
@@ -1764,15 +1852,25 @@
       ctx.onSuccess();
     });
   };
-  Async.start = Async.startImmediate = function (work, cancelToken) {
+  Async.start = Async.startImmediate = Async.startWithContinuations = function (work, onSuccess, onError, onCancel, cancelToken) {
+    if (typeof onSuccess !== "function") {
+      cancelToken = onSuccess;
+      onSuccess = null;
+    }
     work({
-      onSuccess: function () { },
-      onError: function () { },
-      cancelToken: cancelToken
+      onSuccess: onSuccess ? onSuccess : function () {},
+      onError: onError ? onError : function () {},
+      onCancel: onCancel ? onCancel : function () {},
+      cancelToken: cancelToken ? cancelToken : {}
+    });
+  };
+  Async.ignore = function (work) {
+    return Async.bind(work, function () {
+      return Async.return();
     });
   };
   Object.defineProperty(Async, 'cancellationToken', {
-    get: function () {
+    get: function get() {
       return Async.__protectedCont(function (ctx) {
         return ctx.onSuccess(ctx.cancelToken);
       });
@@ -1780,28 +1878,56 @@
   });
   Async.fromContinuations = function (f) {
     return Async.__protectedCont(function (ctx) {
-      return f(ctx.onSuccess, ctx.onError, ctx.onError);
+      return f([ctx.onSuccess, ctx.onError, ctx.onCancel]);
+    });
+  };
+  Async.startAsPromise = function (work, cancelToken) {
+    return new Promise(function (resolve, reject) {
+      Async.startWithContinuations(work, resolve, reject, reject, cancelToken ? cancelToken : {});
+    });
+  };
+  Async.awaitPromise = function (p) {
+    return Async.fromContinuations(function (conts) {
+      p.then(conts[0]).catch(function (err) {
+        (err == "cancelled" ? conts[2] : conts[1])(err);
+      });
+    });
+  };
+  Async.parallel = function (works) {
+    return Async.awaitPromise(Promise.all(Seq.map(function (w) {
+      return Async.startAsPromise(w);
+    }, works)));
+  };
+  Async.catch = function (work) {
+    return Async.__protectedCont(function (ctx) {
+      work({
+        onSuccess: function onSuccess(x) {
+          ctx.onSuccess(new Choice("Choice1Of2", x));
+        },
+        onError: function onError(ex) {
+          ctx.onSuccess(new Choice("Choice2Of2", ex));
+        },
+        onCancel: ctx.onCancel,
+        cancelToken: ctx.cancelToken
+      });
     });
   };
   Async.sleep = function (ms) {
     return Async.__protectedCont(function (ctx) {
       setTimeout(function () {
-        if (ctx.cancelToken != null && ctx.cancelToken.isCancelled) {
-          throw "cancelled";
-        }
-        ctx.onSuccess();
+        ctx.cancelToken.isCancelled ? ctx.onCancel("cancelled") : ctx.onSuccess();
       }, ms);
     });
   };
-    
-  var Observer = function(onNext, onError, onCompleted) {
+
+  var Observer = function Observer(onNext, onError, onCompleted) {
     this.onNext = onNext;
     this.onError = onError || function (e) {};
     this.onCompleted = onCompleted || function () {};
   };
   Util.setInterfaces(Observer.prototype, ["System.IObserver"]);
 
-  var Observable = function(subscribe) {
+  var Observable = function Observable(subscribe) {
     this.subscribe = subscribe;
   };
   Util.setInterfaces(Observable.prototype, ["System.IObservable"]);
@@ -1810,43 +1936,30 @@
   Obs.__protect = function (f, succeed, fail) {
     try {
       succeed(f());
-    }
-    catch (e) {
+    } catch (e) {
       fail(e);
     }
   };
   Obs.map = function (f, w) {
     return new Observable(function (observer) {
-      return w.subscribe(new Observer(
-        function (v) {
-          Obs.__protect(
-            function () { f(v) },
-            observer.onNext,
-            observer.onError
-          );
-        },
-        observer.onError,
-        observer.onCompleted
-      ));
+      return w.subscribe(new Observer(function (v) {
+        Obs.__protect(function () {
+          f(v);
+        }, observer.onNext, observer.onError);
+      }, observer.onError, observer.onCompleted));
     });
   };
   Obs.choose = function (f, w) {
     return new Observable(function (observer) {
-      return w.subscribe(new Observer(
-        function (v) {
-          Obs.__protect(
-            function () { f(v) },
-            function (v) {
-              if (v != null) {
-                observer.onNext(v);
-              }
-            },
-            observer.onError
-          );
-        },
-        observer.onError,
-        observer.onCompleted
-      ));
+      return w.subscribe(new Observer(function (v) {
+        Obs.__protect(function () {
+          f(v);
+        }, function (v) {
+          if (v != null) {
+            observer.onNext(v);
+          }
+        }, observer.onError);
+      }, observer.onError, observer.onCompleted));
     });
   };
   Obs.filter = function (f, w) {
@@ -1855,29 +1968,20 @@
     }, w);
   };
   Obs.partition = function (f, w) {
-    return [
-      Obs.filter(f, w),
-      Obs.filter(function (x) {
-        return !f(x);
-      }, w)
-    ];
+    return [Obs.filter(f, w), Obs.filter(function (x) {
+      return !f(x);
+    }, w)];
   };
   Obs.scan = function (f, state, w) {
     return new Observable(function (observer) {
-      return w.subscribe(new Observer(
-        function (v) {
-          Obs.__protect(
-            function () { f(state, v) },
-            function (z) {
-              state = z;
-              observer.onNext(z);
-            },
-            observer.onError
-          );
-        },
-        observer.onError,
-        observer.onCompleted
-      ));
+      return w.subscribe(new Observer(function (v) {
+        Obs.__protect(function () {
+          f(state, v);
+        }, function (z) {
+          state = z;
+          observer.onNext(z);
+        }, observer.onError);
+      }, observer.onError, observer.onCompleted));
     });
   };
   Obs.add = function (f, w) {
@@ -1889,16 +1993,12 @@
   Obs.pairwise = function (w) {
     return new Observable(function (observer) {
       var lastArgs = null;
-      return w.subscribe(new Observer(
-        function (args2) {
-          if (lastArgs != null) {
-            observer.onNext([lastArgs, args2]);
-          }
-          lastArgs = args2;
-        },
-        observer.onError,
-        observer.onCompleted
-      ));
+      return w.subscribe(new Observer(function (args2) {
+        if (lastArgs != null) {
+          observer.onNext([lastArgs, args2]);
+        }
+        lastArgs = args2;
+      }, observer.onError, observer.onCompleted));
     });
   };
   Obs.merge = function (w1, w2) {
@@ -1906,52 +2006,44 @@
       var stopped = false,
           completed1 = false,
           completed2 = false;
-      var h1 = w1.subscribe(new Observer(
-        function (v) {
-          if (!stopped) {
-            observer.onNext(v);
-          }
-        },
-        function (e) {
-          if (!stopped) {
+      var h1 = w1.subscribe(new Observer(function (v) {
+        if (!stopped) {
+          observer.onNext(v);
+        }
+      }, function (e) {
+        if (!stopped) {
+          stopped = true;
+          observer.onError(e);
+        }
+      }, function () {
+        if (!stopped) {
+          completed1 = true;
+          if (completed2) {
             stopped = true;
-            observer.onError(e);
-          }
-        },
-        function () {
-          if (!stopped) {
-            completed1 = true;
-            if (completed2) {
-              stopped = true;
-              observer.onCompleted();
-            }
+            observer.onCompleted();
           }
         }
-      ));
-      var h2 = w2.subscribe(new Observer(
-        function (v) {
-          if (!stopped) {
-            observer.onNext(v);
-          }
-        },
-        function (e) {
-          if (!stopped) {
+      }));
+      var h2 = w2.subscribe(new Observer(function (v) {
+        if (!stopped) {
+          observer.onNext(v);
+        }
+      }, function (e) {
+        if (!stopped) {
+          stopped = true;
+          observer.onError(e);
+        }
+      }, function () {
+        if (!stopped) {
+          completed2 = true;
+          if (completed1) {
             stopped = true;
-            observer.onError(e);
-          }
-        },
-        function () {
-          if (!stopped) {
-            completed2 = true;
-            if (completed1) {
-              stopped = true;
-              observer.onCompleted();
-            }
+            observer.onCompleted();
           }
         }
-      ));
+      }));
       var disp = {
-        dispose: function () {
+        dispose: function dispose() {
           h1.dispose();
           h2.dispose();
         }
@@ -1961,18 +2053,213 @@
     });
   };
   Obs.split = function (f, w) {
-    return [
-      Obs.choose(function (v) {
-        var res = f(v);
-        return res.Case == "Choice1Of2"
-          ? res.Fields[0] : null;
-      }, w),
-      Obs.choose(function (v) {
-        var res = f(v);
-        return res.Case == "Choice2Of2"
-          ? res.Fields[0] : null;
-      }, w),
-    ];
+    return [Obs.choose(function (v) {
+      var res = f(v);
+      return res.Case == "Choice1Of2" ? res.Fields[0] : null;
+    }, w), Obs.choose(function (v) {
+      var res = f(v);
+      return res.Case == "Choice2Of2" ? res.Fields[0] : null;
+    }, w)];
   };
 
-  module.exports = exports;
+  var Event = exports.Event = function (sbscrb, delegates) {
+    var _this = this;
+    this.delegates = delegates || new Array();
+
+    this.trigger = function (value) {
+      Seq.iter(function (f) {
+        f(value);
+      }, _this.delegates);
+    };
+
+    var _addHandler = function _addHandler(f) {
+      _this.delegates.push(f);
+    };
+
+    var _removeHandler = function _removeHandler(f) {
+      var fnd = function fnd(el, i, arr) {
+        return '' + el == '' + f; //Special dedication to Chet Husk.
+      };
+
+      var index = _this.delegates.findIndex(fnd);
+      if (index > -1) {
+        _this.delegates.splice(index, 1);
+      }
+    };
+
+    this.subscribe = function (f) {
+      var disp;
+      return _addHandler(f), disp = {
+        dispose: function dispose() {
+          _removeHandler(f);
+        }
+      }, disp[FSymbol.interfaces] = ["System.IDisposable"], disp;
+    };
+
+    this.add = function (f) {
+      _addHandler(f);
+    };
+
+    this.addHandler = function (f) {
+      var h = function h(x) {
+        return f(undefined, x);
+      };
+      _addHandler(h);
+    };
+
+    this.removeHandler = function (f) {
+      var h = function h(x) {
+        return f(undefined, x);
+      };
+      _removeHandler(h);
+    };
+
+    this._subscribe = sbscrb || function (observer) {
+      var disp,
+          f = observer.onNext;
+      return _addHandler(f), disp = {
+        dispose: function dispose() {
+          _removeHandler(f);
+        }
+      }, disp[FSymbol.interfaces] = ["System.IDisposable"], disp;
+    };
+  };
+  Object.defineProperty(Event.prototype, "publish", {
+    get: function get() {
+      return this;
+    }
+  });
+
+  Event.add = function (f, w) {
+    w._subscribe(new Observer(f));
+  };
+
+  Event.map = function (f, w) {
+    var s = function s(observer) {
+      w._subscribe(new Observer(function (v) {
+        Obs.__protect(function () {
+          return f(v);
+        }, observer.onNext, observer.onError);
+      }, observer.onError, observer.onCompleted));
+    };
+    return new Event(s, w.delegates);
+  };
+
+  Event.choose = function (f, w) {
+    var s = function s(observer) {
+      return w._subscribe(new Observer(function (v) {
+        Obs.__protect(function () {
+          return f(v);
+        }, function (v) {
+          if (v != null) {
+            observer.onNext(v);
+          }
+        }, observer.onError);
+      }, observer.onError, observer.onCompleted));
+    };
+    return new Event(s, w.delegates);
+  };
+
+  Event.filter = function (f, w) {
+    return Event.choose(function (x) {
+      return f(x) ? x : null;
+    }, w);
+  };
+
+  Event.partition = function (f, w) {
+    return [Event.filter(f, w), Event.filter(function (x) {
+      return !f(x);
+    }, w)];
+  };
+
+  Event.scan = function (f, state, w) {
+    var s = function s(observer) {
+      return w._subscribe(new Observer(function (v) {
+        Obs.__protect(function () {
+          return f(state, v);
+        }, function (z) {
+          state = z;
+          observer.onNext(z);
+        }, observer.onError);
+      }, observer.onError, observer.onCompleted));
+    };
+    return new Event(s, w.delegates);
+  };
+
+  Event.pairwise = function (w) {
+    var s = function s(observer) {
+      var lastArgs = null;
+      return w._subscribe(new Observer(function (args2) {
+        if (lastArgs != null) {
+          observer.onNext([lastArgs, args2]);
+        }
+        lastArgs = args2;
+      }, observer.onError, observer.onCompleted));
+    };
+    return new Event(s, w.delegates);
+  };
+
+  Event.merge = function (w1, w2) {
+    var s = function s(observer) {
+      var stopped = false,
+          completed1 = false,
+          completed2 = false;
+      var h1 = w1._subscribe(new Observer(function (v) {
+        if (!stopped) {
+          observer.onNext(v);
+        }
+      }, function (e) {
+        if (!stopped) {
+          stopped = true;
+          observer.onError(e);
+        }
+      }, function () {
+        if (!stopped) {
+          completed1 = true;
+          if (completed2) {
+            stopped = true;
+            observer.onCompleted();
+          }
+        }
+      }));
+      var h2 = w2._subscribe(new Observer(function (v) {
+        if (!stopped) {
+          observer.onNext(v);
+        }
+      }, function (e) {
+        if (!stopped) {
+          stopped = true;
+          observer.onError(e);
+        }
+      }, function () {
+        if (!stopped) {
+          completed2 = true;
+          if (completed1) {
+            stopped = true;
+            observer.onCompleted();
+          }
+        }
+      }));
+      var disp = {
+        dispose: function dispose() {
+          h1.dispose();
+          h2.dispose();
+        }
+      };
+      disp[FSymbol.interfaces] = ["System.IDisposable"];
+      return disp;
+    };
+
+    return new Event(s, w1.delegates.concat(w2.delegates));
+  };
+
+  Event.split = function (f, w) {
+    return [Event.choose(function (v) {
+      var res = f(v);
+      return res.Case == "Choice1Of2" ? res.Fields[0] : null;
+    }, w), Event.choose(function (v) {
+      var res = f(v);
+      return res.Case == "Choice2Of2" ? res.Fields[0] : null;
+    }, w)];
+  };
+});

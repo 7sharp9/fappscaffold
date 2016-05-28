@@ -1,28 +1,36 @@
 ﻿namespace Program
-
-open System
+open Fable.Core
+open System.Threading
 open Fuse
+open Fable.Import
+open Fable.Import.Fetch
 
-//then 
-//                <Func<T, U2<TResult, JS.PromiseLike<TResult>>>> *
-//                <Func<obj, U2<TResult, JS.PromiseLike<TResult>>>> -> TResult
-
-//then 
-//                <Func<T, U2<TResult, JS.PromiseLike<TResult>>>> *
-//                <Func<obj, Unit>> onrejected) -> TResult
-
-module Module1 =    
-    
+//[<AutoOpen;Erase>]
+//module Hack =
+//
+//    type Microsoft.FSharp.Control.AsyncBuilder with
+//        member x.Bind(p, f) = 
+//            async.Bind (Async.AwaitPromise(p), f)
+ 
+module Module1 =
     let data = Observable.create()
-    promise {
-        let! req = fetch "http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json"
-        let! json = req.json ()
-        do (data.value <- json) } |> ignore
+
+    //async {
+    //   let! req = fetch "http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json"
+    //   let! json = req.json ()
+    //   do (data.value <- json) } |> Async.Start 
+
+    // promise {
+    //     let! req = GlobalFetch.fetch (Url "http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json")
+    //     let! json = req.json ()
+    //     do (data.value <- json) } |> ignore
         
-    fetch "http://az664292.vo.msecnd.net/files/ZjPdBhWNdPRMI4qK-colors.json"
-    |> Promise.success (fun resp -> resp.json())                                                                       
-    |> Promise.success (fun responseObject -> data.value <- responseObject)
+    GlobalFetch.fetch (Url "http://rgb.to/save/json/palette/cc6793")
+    |> Promise.success (fun resp -> resp.json())                                                                          
+    |> Promise.success (fun json -> data.value <- json)
     |> ignore
+
+    //data.clear()
 
     Console.log (data.value)
 
@@ -80,8 +88,18 @@ module Module1 =
 
     let obsU = obsZ.mapi(fun p idx -> p + (idx + 1 |> float))
 
-    let buttonClicked args =     
+    let buttonClicked args =
+        let thing = 
+            GlobalFetch.fetch (Url "http://rgb.to/save/json/palette/cc6793")
+            |> Promise.success (fun resp -> resp.json())                                                                                   
+            |> Promise.success (fun json -> data.value <- json)
+        
+        
+    
         Console.log (Json.stringify args)
+        
+    let otherbuttonClicked args =
+        data.forEach (fun f -> Console.log f)
         
     Console.log (obsX.value)
     Console.log (obsY.value)

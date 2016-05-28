@@ -3,12 +3,13 @@
 
 	<ClientPanel>		
 		<StackPanel>
-			<Text Value="{X}" />
+			<Text Value="{X}"><DropShadow /></Text>
 			<Basic.Button Text="Click me!" Clicked="{buttonClicked}" />
+			<Basic.Button Text="Delete 1" Clicked="{otherbuttonClicked}" />
 			<Text Value="{obsX}" /> 
 			<Text Value="{obsY}" />
 			<Text Value="{obsZ}" />
-			<Text Value="{obsU}" />
+			<Text Value="{obsU}" /> 
 			<Text Value="{plainObservable}" />
 			<Text Value="{untypedObservable}" />
 			<Text Value="{untypedProjection}" />
@@ -31,15 +32,15 @@
 			<Text Value="{untypedProjection}" />
 			<Text Value="{counter}" />
 			<ScrollView>
-			<Grid ColumnCount="3" >
-				<Each Items="{data.colorsArray}">
-					<DockPanel Height="80" Margin="10,0">
+			<Grid ColumnCount="4">
+				<Each Items="{data.tetrad.palette}">
+					<DockPanel Height="80" Margin="5,0">
 						<Panel DockPanel.Dock="Top" Margin="10" Height="30">
-							<Rectangle Layer="Background" CornerRadius="10" Fill="#fff"/>
-							<Text Value="{colorName}" TextAlignment="Center" Alignment="Center" />
+							<Rectangle Layer="Background" CornerRadius="10" Fill="#fff" />
+							<Text Value="{hex}" TextAlignment="Center" Alignment="Center" />
 						</Panel>
 
-						<Rectangle Layer="Background" CornerRadius="10" Fill="{hexValue}"/>
+						<Rectangle Layer="Background" CornerRadius="10" Fill="{hex}" />
 					</DockPanel>
 				</Each>
 			</Grid>
